@@ -1,0 +1,89 @@
+name: Publicar bono académico de Edwin Yunis
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: bono-ml-github-pages
+  cancel-in-progress: false
+
+jobs:
+  preparar-y-publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Extraer material académico original
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          zip_path = Path("Bono_Academico_Demostraciones_ML_Edwin_Yunis.zip")
+          if zip_path.exists():
+              with ZipFile(zip_path) as archive:
+                  for item in archive.infolist():
+                      path = Path(item.filename)
+                      if path.is_absolute() or ".." in path.parts:
+                          raise ValueError(f"Ruta insegura en el ZIP: {item.filename}")
+                      if path.parts[:2] == (".github", "workflows"):
+                          continue
+                      if path.name == "generar_html.py":
+                          continue
+                      if item.is_dir():
+                          continue
+                      target = Path(*path.parts)
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(archive.read(item))
+              print("Se extrajeron los capítulos y el sitio web.")
+          else:
+              print("El contenido ya está integrado en el repositorio.")
+          docs = Path("docs")
+          expected = [docs / "index.html"] + [docs / f"{i:02d}.html" for i in range(1, 9)]
+          missing = [str(path) for path in expected if not path.is_file()]
+          if missing:
+              raise FileNotFoundError("Faltan páginas: " + ", ".join(missing))
+          index = (docs / "index.html").read_text(encoding="utf-8")
+          assert "Edwin Yunis" in index
+          assert "Jairo Andrés Serrano" not in index
+          assert "Bono académico" in index
+          assert (docs / "figuras/arbol_corregido.png").is_file()
+          print("Sitio verificado: Edwin Yunis, 8 capítulos y árbol corregido.")
+          PY
+
+      - name: Integrar archivos descomprimidos al repositorio
+        shell: bash
+        run: |
+          if [ -f Bono_Academico_Demostraciones_ML_Edwin_Yunis.zip ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git rm --cached -- Bono_Academico_Demostraciones_ML_Edwin_Yunis.zip
+            rm -f Bono_Academico_Demostraciones_ML_Edwin_Yunis.zip
+            if ! git diff --cached --quiet; then
+              git commit -m "Integrar demostraciones individuales y sitio académico"
+              git push
+            fi
+          fi
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar páginas
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Desplegar sitio
+        id: deployment
+        uses: actions/deploy-pages@v4
