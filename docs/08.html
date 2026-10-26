@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Demostraciones de Machine Learning, trabajo individual de Edwin Yunis"><title>AdaBoost · Edwin Yunis</title><link rel="stylesheet" href="styles.css"><script>window.MathJax={tex:{inlineMath:[["\(","\)"],["$","$"]],displayMath:[["\[","\]"],["$$","$$"]]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script></head><body>
+<div class="layout"><aside class="sidebar"><div class="brand"><span class="mark">∑</span><div><b>Machine Learning</b><small>Bono académico · Demostraciones</small></div></div><p class="sidecap">AUTOR</p><p class="student">Edwin Yunis</p><p class="sidecap">CAPÍTULOS</p><nav aria-label="Capítulos"><a href="intro.html" class="nav "><span class="navnum">00</span><span><b>Inicio</b><small>Introducción y mapa del bono</small></span></a><a href="01.html" class="nav "><span class="navnum">01</span><span><b>Riesgo en K-NN</b><small>Riesgo verdadero y empírico</small></span></a><a href="02.html" class="nav "><span class="navnum">02</span><span><b>Cota de 1-NN</b><small>Dos casos de η(x)</small></span></a><a href="03.html" class="nav "><span class="navnum">03</span><span><b>Ridge: propiedades</b><small>Esperanza, covarianza, sesgo y ECM</small></span></a><a href="04.html" class="nav "><span class="navnum">04</span><span><b>Ridge: derivadas</b><small>Centrado e intercepto</small></span></a><a href="05.html" class="nav "><span class="navnum">05</span><span><b>Estandarización</b><small>Igualdades (3.11)</small></span></a><a href="06.html" class="nav "><span class="navnum">06</span><span><b>Lasso</b><small>Subgradiente, umbral suave y LARS</small></span></a><a href="07.html" class="nav "><span class="navnum">07</span><span><b>Árbol corregido</b><small>Gini y Age < 49</small></span></a><a href="08.html" class="nav selected"><span class="navnum">08</span><span><b>AdaBoost</b><small>Pesos, actualización y cota</small></span></a></nav><div class="sidefoot">Dr. Lihki Rubio<br>Maestría en Ingeniería Industrial<br>Universidad del Norte · 2026</div></aside>
+<div class="mainwrap"><header class="topbar"><div><b>Demostraciones matemáticas</b><span> · Solución individual</span></div><div class="topright">Edwin Yunis</div></header><main class="main"><div class="crumb">BONO ACADÉMICO <span>/</span> AdaBoost</div><article class="paper"><h1>8. AdaBoost · Derivación del algoritmo</h1>
+<p><img src="figuras/image10.png" alt="Introducción a AdaBoost" /></p>
+<p><img src="figuras/image11.png" alt="Pasos del algoritmo AdaBoost" /></p>
+<h2>8.1 Objetivo y esquema aditivo</h2>
+<p>En clasificación binaria, <span class="math">\(y_n\in\{-1,1\}\)</span>, cada clasificador débil <span class="math">\(\phi(x;\theta_i)\in\{-1,1\}\)</span> y el conjunto produce</p>
+<div class="math-block">\[F_K(x)=\sum_{i=1}^K\alpha_i\phi(x;\theta_i),\qquad f_K(x)=\operatorname{sign}(F_K(x)).\]</div>
+<p>AdaBoost selecciona sucesivamente clasificadores para reducir la <strong>pérdida exponencial</strong>:</p>
+<div class="math-block">\[J(F)=\sum_{n=1}^N\exp[-y_nF(x_n)].\]</div>
+<p>En la iteración <span class="math">\(i\)</span> se conserva la combinación anterior <span class="math">\(F_{i-1}\)</span> y se agrega <span class="math">\(\alpha\phi\)</span>.</p>
+<h2>8.2 ¿De dónde salen los pesos de las observaciones?</h2>
+<p>El criterio del nuevo clasificador se escribe</p>
+<div class="math-block">\[\begin{aligned}J(F_{i-1}+\alpha\phi)&amp;=\sum_{n=1}^Ne^{-y_nF_{i-1}(x_n)}e^{-\alpha y_n\phi(x_n)}.\end{aligned}\]</div>
+<p>Definimos pesos normalizados <span class="math">\(w_n^{(i)}=e^{-y_nF_{i-1}(x_n)}/\sum_re^{-y_rF_{i-1}(x_r)}\)</span>. Con <span class="math">\(F_0=0\)</span>, todos los ejemplos comienzan con el mismo peso: <span class="math">\(w_n^{(1)}=1/N\)</span>.</p>
+<h2>8.3 El clasificador débil minimiza el error ponderado</h2>
+<p>La cantidad <span class="math">\(y_n\phi(x_n)\)</span> vale <span class="math">\(+1\)</span> si hay acierto y <span class="math">\(-1\)</span> si hay error. Para el error ponderado</p>
+<div class="math-block">\[P_i=\sum_{n:y_n\ne\phi_i(x_n)}w_n^{(i)},\]</div>
+<p>la pérdida de la etapa, salvo un factor positivo que no cambia el mínimo, es</p>
+<div class="math-block">\[J_i(\alpha)=(1-P_i)e^{-\alpha}+P_ie^{\alpha}.\]</div>
+<p>Cuando <span class="math">\(\alpha&gt;0\)</span>, minimizar respecto a <span class="math">\(\phi_i\)</span> equivale a minimizar <span class="math">\(P_i\)</span>. Así se justifica entrenar el clasificador que comete menos errores <em>ponderados</em>, no simplemente menos errores sin pesos.</p>
+<h2>8.4 Cálculo del peso del clasificador</h2>
+<p>Derivamos:</p>
+<div class="math-block">\[\frac{dJ_i}{d\alpha}=-(1-P_i)e^{-\alpha}+P_ie^{\alpha}.\]</div>
+<p>Al igualar a cero y despejar,</p>
+<div class="math-block">\[P_ie^{\alpha}=(1-P_i)e^{-\alpha}\Longrightarrow e^{2\alpha}=\frac{1-P_i}{P_i}.\]</div>
+<p>Por tanto,</p>
+<div class="math-block">\[\boxed{\alpha_i=\frac12\ln\left(\frac{1-P_i}{P_i}\right).}\]</div>
+<p>La segunda derivada <span class="math">\(J_i''=(1-P_i)e^{-\alpha}+P_ie^{\alpha}&gt;0\)</span> demuestra que es mínimo. Bajo el supuesto habitual <span class="math">\(0&lt;P_i&lt;1/2\)</span>, se cumple <span class="math">\(\alpha_i&gt;0\)</span>. Si <span class="math">\(P_i=1/2\)</span>, el clasificador no aporta poder discriminante; si <span class="math">\(P_i=0\)</span>, la fórmula requiere tratamiento como clasificador perfecto (detención o límite).</p>
+<p><strong>Corrección:</strong> es fundamental que el logaritmo abarque la <strong>fracción completa</strong>, no solo el numerador.</p>
+<h2>8.5 Actualización y normalización de pesos</h2>
+<p>Después de elegir <span class="math">\(\phi_i\)</span> y <span class="math">\(\alpha_i\)</span>, el peso de la observación <span class="math">\(n\)</span> es</p>
+<div class="math-block">\[\boxed{w_n^{(i+1)}=\frac{w_n^{(i)}\exp[-\alpha_i y_n\phi_i(x_n)]}{Z_i},\quad Z_i=\sum_{r=1}^Nw_r^{(i)}e^{-\alpha_i y_r\phi_i(x_r)}.}\]</div>
+<p>Como los ejemplos mal clasificados tienen <span class="math">\(y_n\phi_i=-1\)</span>, su peso se multiplica por <span class="math">\(e^{\alpha_i}\)</span>; los aciertos lo hacen por <span class="math">\(e^{-\alpha_i}\)</span>. De ese modo la siguiente etapa presta más atención a los casos difíciles.</p>
+<p>El normalizador depende de <span class="math">\(P_i\)</span>:</p>
+<div class="math-block">\[\boxed{Z_i=(1-P_i)e^{-\alpha_i}+P_ie^{\alpha_i}=2\sqrt{P_i(1-P_i)}.}\]</div>
+<p>Con los nuevos pesos, el conjunto de ejemplos antes mal clasificados recibe masa total</p>
+<div class="math-block">\[\frac{P_ie^{\alpha_i}}{Z_i}=\frac12.\]</div>
+<h2>8.6 Cota de entrenamiento</h2>
+<p>Si <span class="math">\(y_nF_K(x_n)\le0\)</span>, entonces <span class="math">\(\mathbf1\{\operatorname{sign}F_K(x_n)\ne y_n\}\le e^{-y_nF_K(x_n)}\)</span> (la convención en empate debe tratarse de manera coherente). En la pérdida exponencial promedio,</p>
+<div class="math-block">\[\boxed{L_S(f_K)\le\frac1N\sum_{n=1}^Ne^{-y_nF_K(x_n)}=\prod_{i=1}^KZ_i=\prod_{i=1}^K2\sqrt{P_i(1-P_i)}.}\]</div>
+<p>Si cada clasificador mantiene <span class="math">\(P_i\le\tfrac12-\gamma\)</span> con <span class="math">\(\gamma&gt;0\)</span>, el producto es a lo sumo <span class="math">\((\sqrt{1-4\gamma^2})^K\)</span>, por lo que disminuye exponencialmente con las iteraciones.</p>
+<p><strong>Conclusión:</strong> AdaBoost transforma clasificadores débiles en una combinación ponderada. Reorienta iterativamente la distribución hacia observaciones con error y produce una regla final basada en el signo de la suma ponderada.</p>
+</article><div class="nextprev"><a href="07.html">← Árbol corregido</a><span></span></div><footer>Documento académico individual · Edwin Yunis · Fuentes: notas del profesor y consignas de la tarea.</footer></main></div></div></body></html>

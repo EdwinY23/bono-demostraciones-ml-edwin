@@ -1,0 +1,19 @@
+format: jb-book
+root: intro
+parts:
+  - caption: K-vecinos más cercanos
+    chapters:
+      - file: "01"
+      - file: "02"
+  - caption: Regresión Ridge
+    chapters:
+      - file: "03"
+      - file: "04"
+      - file: "05"
+  - caption: Lasso y selección de variables
+    chapters:
+      - file: "06"
+  - caption: Árboles y ensambles
+    chapters:
+      - file: "07"
+      - file: "08"

@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Demostraciones de Machine Learning, trabajo individual de Edwin Yunis"><title>Ridge: propiedades · Edwin Yunis</title><link rel="stylesheet" href="styles.css"><script>window.MathJax={tex:{inlineMath:[["\(","\)"],["$","$"]],displayMath:[["\[","\]"],["$$","$$"]]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script></head><body>
+<div class="layout"><aside class="sidebar"><div class="brand"><span class="mark">∑</span><div><b>Machine Learning</b><small>Bono académico · Demostraciones</small></div></div><p class="sidecap">AUTOR</p><p class="student">Edwin Yunis</p><p class="sidecap">CAPÍTULOS</p><nav aria-label="Capítulos"><a href="intro.html" class="nav "><span class="navnum">00</span><span><b>Inicio</b><small>Introducción y mapa del bono</small></span></a><a href="01.html" class="nav "><span class="navnum">01</span><span><b>Riesgo en K-NN</b><small>Riesgo verdadero y empírico</small></span></a><a href="02.html" class="nav "><span class="navnum">02</span><span><b>Cota de 1-NN</b><small>Dos casos de η(x)</small></span></a><a href="03.html" class="nav selected"><span class="navnum">03</span><span><b>Ridge: propiedades</b><small>Esperanza, covarianza, sesgo y ECM</small></span></a><a href="04.html" class="nav "><span class="navnum">04</span><span><b>Ridge: derivadas</b><small>Centrado e intercepto</small></span></a><a href="05.html" class="nav "><span class="navnum">05</span><span><b>Estandarización</b><small>Igualdades (3.11)</small></span></a><a href="06.html" class="nav "><span class="navnum">06</span><span><b>Lasso</b><small>Subgradiente, umbral suave y LARS</small></span></a><a href="07.html" class="nav "><span class="navnum">07</span><span><b>Árbol corregido</b><small>Gini y Age < 49</small></span></a><a href="08.html" class="nav "><span class="navnum">08</span><span><b>AdaBoost</b><small>Pesos, actualización y cota</small></span></a></nav><div class="sidefoot">Dr. Lihki Rubio<br>Maestría en Ingeniería Industrial<br>Universidad del Norte · 2026</div></aside>
+<div class="mainwrap"><header class="topbar"><div><b>Demostraciones matemáticas</b><span> · Solución individual</span></div><div class="topright">Edwin Yunis</div></header><main class="main"><div class="crumb">BONO ACADÉMICO <span>/</span> Ridge: propiedades</div><article class="paper"><h1>3. Ridge · Propiedades del estimador (3.12)</h1>
+<p><img src="figuras/image3.png" alt="Propiedades del estimador Ridge" /></p>
+<h2>3.1 Modelo y condiciones</h2>
+<p>Partimos del modelo lineal <span class="math">\(y=X\beta+\varepsilon\)</span>, con diseño <span class="math">\(X\in\mathbb R^{n\times p}\)</span> fijo, <span class="math">\(\mathbb E(\varepsilon)=0\)</span>, <span class="math">\(\operatorname{Cov}(\varepsilon)=\sigma^2I_n\)</span> y penalización <span class="math">\(\lambda&gt;0\)</span>. Suponemos las variables centradas para no penalizar el intercepto.</p>
+<p>El estimador ridge y la matriz auxiliar son</p>
+<div class="math-block">\[\hat\beta_R=(X^TX+\lambda I_p)^{-1}X^Ty,\qquad A=(X^TX+\lambda I_p)^{-1}.\]</div>
+<p>La inversa existe porque <span class="math">\(X^TX\)</span> es semidefinida positiva y la suma con <span class="math">\(\lambda I_p\)</span> es definida positiva. Además, <span class="math">\(A\)</span> es simétrica.</p>
+<h2>3.2 Primera propiedad: esperanza</h2>
+<p>Reemplazamos <span class="math">\(y\)</span> por <span class="math">\(X\beta+\varepsilon\)</span> y tomamos esperanza:</p>
+<div class="math-block">\[\begin{aligned}\mathbb E(\hat\beta_R)&amp;=\mathbb E[AX^T(X\beta+\varepsilon)]\\&amp;=AX^TX\beta+AX^T\underbrace{\mathbb E(\varepsilon)}_{0}.\end{aligned}\]</div>
+<div class="math-block">\[\boxed{\mathbb E(\hat\beta_R)=(X^TX+\lambda I_p)^{-1}X^TX\beta.}\]</div>
+<h2>3.3 Segunda propiedad: covarianza</h2>
+<p>La parte aleatoria es <span class="math">\(AX^T\varepsilon\)</span>. Usamos <span class="math">\(\operatorname{Cov}(BU)=B\operatorname{Cov}(U)B^T\)</span>:</p>
+<div class="math-block">\[\begin{aligned}\operatorname{Cov}(\hat\beta_R)&amp;=AX^T(\sigma^2I_n)XA^T\\&amp;=\sigma^2AX^TXA.\end{aligned}\]</div>
+<div class="math-block">\[\boxed{\operatorname{Cov}(\hat\beta_R)=\sigma^2(X^TX+\lambda I)^{-1}X^TX(X^TX+\lambda I)^{-1}.}\]</div>
+<h2>3.4 Tercera propiedad: sesgo</h2>
+<p>De <span class="math">\(A(X^TX+\lambda I)=I\)</span> se deduce <span class="math">\(AX^TX=I-\lambda A\)</span>. Por lo tanto,</p>
+<div class="math-block">\[\begin{aligned}\mathbb E(\hat\beta_R-\beta)&amp;=(AX^TX-I)\beta\\&amp;= -\lambda A\beta.\end{aligned}\]</div>
+<div class="math-block">\[\boxed{\operatorname{Sesgo}(\hat\beta_R)=-\lambda(X^TX+\lambda I_p)^{-1}\beta.}\]</div>
+<p>El parámetro <span class="math">\(\lambda\)</span> introduce deliberadamente sesgo para disminuir la variabilidad del estimador.</p>
+<h2>3.5 Cuarta propiedad: error cuadrático medio</h2>
+<p>Para un vector estimador <span class="math">\(\hat\beta\)</span> se cumple la descomposición</p>
+<div class="math-block">\[\mathbb E\|\hat\beta-\beta\|_2^2=\operatorname{tr}[\operatorname{Cov}(\hat\beta)]+\|\operatorname{Sesgo}(\hat\beta)\|_2^2.\]</div>
+<p>Si <span class="math">\(l_1,\dots,l_p\)</span> son los autovalores no negativos de <span class="math">\(X^TX\)</span>, al diagonalizar ortogonalmente esa matriz se obtiene</p>
+<div class="math-block">\[\operatorname{tr}(AX^TXA)=\sum_{j=1}^p\frac{l_j}{(l_j+\lambda)^2}.\]</div>
+<p>Como <span class="math">\(A\)</span> es simétrica, el cuadrado del sesgo es <span class="math">\(\lambda^2\beta^TA^2\beta\)</span>. En consecuencia,</p>
+<div class="math-block">\[\boxed{\mathbb E\|\hat\beta_R-\beta\|_2^2=\sigma^2\sum_{j=1}^p\frac{l_j}{(l_j+\lambda)^2}+\lambda^2\beta^T(X^TX+\lambda I_p)^{-2}\beta.}\]</div>
+<p><strong>Interpretación:</strong> el primer sumando mide varianza y el segundo sesgo al cuadrado. Aumentar <span class="math">\(\lambda\)</span> reduce la varianza pero puede aumentar el sesgo: es el compromiso <strong>sesgo–varianza</strong>. Al contrario de mínimos cuadrados sin regularizar, ridge sigue estando definido incluso si <span class="math">\(X^TX\)</span> es singular, siempre que <span class="math">\(\lambda&gt;0\)</span>.</p>
+<blockquote>
+<p><strong>Precisión de notación:</strong> el estimador es <span class="math">\(\hat\beta_R\)</span>; el vector poblacional <span class="math">\(\beta\)</span> es un parámetro fijo, no una variable aleatoria en el modelo clásico.</p>
+</blockquote>
+</article><div class="nextprev"><a href="02.html">← Cota de 1-NN</a><span></span><a href="04.html">Ridge: derivadas →</a></div><footer>Documento académico individual · Edwin Yunis · Fuentes: notas del profesor y consignas de la tarea.</footer></main></div></div></body></html>

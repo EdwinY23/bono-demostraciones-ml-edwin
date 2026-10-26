@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Demostraciones de Machine Learning, trabajo individual de Edwin Yunis"><title>Árbol corregido · Edwin Yunis</title><link rel="stylesheet" href="styles.css"><script>window.MathJax={tex:{inlineMath:[["\(","\)"],["$","$"]],displayMath:[["\[","\]"],["$$","$$"]]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script></head><body>
+<div class="layout"><aside class="sidebar"><div class="brand"><span class="mark">∑</span><div><b>Machine Learning</b><small>Bono académico · Demostraciones</small></div></div><p class="sidecap">AUTOR</p><p class="student">Edwin Yunis</p><p class="sidecap">CAPÍTULOS</p><nav aria-label="Capítulos"><a href="intro.html" class="nav "><span class="navnum">00</span><span><b>Inicio</b><small>Introducción y mapa del bono</small></span></a><a href="01.html" class="nav "><span class="navnum">01</span><span><b>Riesgo en K-NN</b><small>Riesgo verdadero y empírico</small></span></a><a href="02.html" class="nav "><span class="navnum">02</span><span><b>Cota de 1-NN</b><small>Dos casos de η(x)</small></span></a><a href="03.html" class="nav "><span class="navnum">03</span><span><b>Ridge: propiedades</b><small>Esperanza, covarianza, sesgo y ECM</small></span></a><a href="04.html" class="nav "><span class="navnum">04</span><span><b>Ridge: derivadas</b><small>Centrado e intercepto</small></span></a><a href="05.html" class="nav "><span class="navnum">05</span><span><b>Estandarización</b><small>Igualdades (3.11)</small></span></a><a href="06.html" class="nav "><span class="navnum">06</span><span><b>Lasso</b><small>Subgradiente, umbral suave y LARS</small></span></a><a href="07.html" class="nav selected"><span class="navnum">07</span><span><b>Árbol corregido</b><small>Gini y Age < 49</small></span></a><a href="08.html" class="nav "><span class="navnum">08</span><span><b>AdaBoost</b><small>Pesos, actualización y cota</small></span></a></nav><div class="sidefoot">Dr. Lihki Rubio<br>Maestría en Ingeniería Industrial<br>Universidad del Norte · 2026</div></aside>
+<div class="mainwrap"><header class="topbar"><div><b>Demostraciones matemáticas</b><span> · Solución individual</span></div><div class="topright">Edwin Yunis</div></header><main class="main"><div class="crumb">BONO ACADÉMICO <span>/</span> Árbol corregido</div><article class="paper"><h1>7. Árbol de decisión · Revisión del ejercicio 6</h1>
+<p><img src="figuras/image8.png" alt="Enunciado y cálculos publicados del árbol" /></p>
+<p><img src="figuras/image9.png" alt="Continuación de la solución publicada" /></p>
+<h2>7.1 ¿Qué debía identificarse?</h2>
+<p>El documento solicita buscar un error en la solución del <a href="https://lihkir.github.io/MachineLearning/exercises_sols.html">ejercicio 6, Random Forest y XGBoost</a>. La solución externa propone un árbol para la etiqueta <em>Gonna Be an Astronaut</em> según edad, gusto por perros y gusto por la gravedad. Contrastaremos los tamaños de nodos, los índices de Gini y el árbol resultante.</p>
+<p>Para dos clases, la impureza de un nodo es <span class="math">\(G(D)=1-p_0^2-p_1^2\)</span>. Tras una partición en <span class="math">\(D_1,D_2\)</span>, la impureza ponderada es</p>
+<div class="math-block">\[\boxed{G_{split}=\frac{|D_1|}{|D|}G(D_1)+\frac{|D_2|}{|D|}G(D_2).}\]</div>
+<p>La partición preferida es la de menor impureza ponderada, pues maximiza la reducción frente al nodo padre.</p>
+<h2>7.2 Primer error: tabla del umbral 36 de edad</h2>
+<p>La muestra original tiene 10 observaciones, con 5 de cada clase. Los umbrales ordenados pasan una observación adicional a la rama izquierda al avanzar al siguiente valor distinto. La solución publicada registra <strong>2 observaciones</strong> a la izquierda del umbral 36, igual que en el umbral 33, pese a que se incorporó otra edad.</p>
+<p>Con 3 registros a la izquierda y 7 a la derecha, y proporciones de clases <span class="math">\((2,1)\)</span> y <span class="math">\((3,4)\)</span> (o intercambiadas), tenemos</p>
+<div class="math-block">\[G(D_1)=1-(2/3)^2-(1/3)^2=4/9,\qquad G(D_2)=1-(3/7)^2-(4/7)^2=24/49.\]</div>
+<p>La impureza ponderada correcta es</p>
+<div class="math-block">\[\boxed{G_{36}=\tfrac{3}{10}\cdot\tfrac49+\tfrac{7}{10}\cdot\tfrac{24}{49}=\tfrac{10}{21}\approx0.47619\quad\text{y no }0.500.}\]</div>
+<p>En la ilustración del umbral 39 aparece además una ponderación escrita como <span class="math">\(6/10+6/10\)</span>; con grupos de tamaños 4 y 6 debe usarse <span class="math">\(4/10\)</span> y <span class="math">\(6/10\)</span>.</p>
+<h2>7.3 Error decisivo: segundo nivel del árbol</h2>
+<p>La solución selecciona inicialmente <strong>Like Gravity</strong>, que produce cuatro casos negativos puros y una rama positiva con seis ejemplos. Para la rama <code>Like Gravity = Sí</code>, el material publicado entrega exactamente:</p>
+<table>
+<thead>
+<tr>
+  <th style="text-align:right">Edad</th>
+  <th style="text-align:center">Like Dogs</th>
+  <th style="text-align:center">Astronauta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td style="text-align:right">30</td>
+  <td style="text-align:center">1</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="text-align:right">36</td>
+  <td style="text-align:center">0</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="text-align:right">44</td>
+  <td style="text-align:center">1</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="text-align:right">47</td>
+  <td style="text-align:center">1</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="text-align:right">47</td>
+  <td style="text-align:center">0</td>
+  <td style="text-align:center">1</td>
+</tr>
+<tr>
+  <td style="text-align:right">51</td>
+  <td style="text-align:center">1</td>
+  <td style="text-align:center">0</td>
+</tr>
+</tbody>
+</table>
+<p>Cinco casos tienen clase <strong>Sí</strong> y únicamente el caso de edad <strong>51</strong> tiene clase <strong>No</strong>. Por eso, el nodo padre de esta rama tiene</p>
+<div class="math-block">\[G(D)=1-(5/6)^2-(1/6)^2=10/36\approx0.27778.\]</div>
+<p>La edad crea umbrales candidatos <strong>33, 40, 45.5 y 49</strong>; el último separa el registro de 51 de los demás.</p>
+<table>
+<thead>
+<tr>
+  <th style="text-align:left">Umbral de edad</th>
+  <th style="text-align:left">Tamaños</th>
+  <th style="text-align:left">Composición de clases</th>
+  <th style="text-align:right">Gini ponderado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td style="text-align:left">33</td>
+  <td style="text-align:left">1 y 5</td>
+  <td style="text-align:left">izq. (1 Sí, 0 No); der. (4 Sí, 1 No)</td>
+  <td style="text-align:right">0.2667</td>
+</tr>
+<tr>
+  <td style="text-align:left">40</td>
+  <td style="text-align:left">2 y 4</td>
+  <td style="text-align:left">izq. (2 Sí, 0 No); der. (3 Sí, 1 No)</td>
+  <td style="text-align:right">0.2500</td>
+</tr>
+<tr>
+  <td style="text-align:left">45.5</td>
+  <td style="text-align:left">3 y 3</td>
+  <td style="text-align:left">izq. (3 Sí, 0 No); der. (2 Sí, 1 No)</td>
+  <td style="text-align:right">0.2222</td>
+</tr>
+<tr>
+  <td style="text-align:left"><strong>49</strong></td>
+  <td style="text-align:left"><strong>5 y 1</strong></td>
+  <td style="text-align:left"><strong>izq. (5 Sí, 0 No); der. (0 Sí, 1 No)</strong></td>
+  <td style="text-align:right"><strong>0.0000</strong></td>
+</tr>
+</tbody>
+</table>
+<p>En particular,</p>
+<div class="math-block">\[\boxed{G_{49}=\frac56\left[1-(5/5)^2\right]+\frac16\left[1-(1/1)^2\right]=0.}\]</div>
+<p><strong>Conclusión verificable:</strong> el umbral <strong>49</strong> es superior al <strong>45.5</strong> señalado como mejor en la solución publicada: el corte a 49 hace que las dos hojas sean puras, por lo que no hay razón para introducir una partición adicional por <code>Like Dogs</code>.</p>
+<h2>7.4 Revisión de Like Dogs</h2>
+<p>En los mismos seis registros, <code>Like Dogs = 1</code> corresponde a cuatro observaciones: <strong>3 Sí y 1 No</strong>; <code>Like Dogs = 0</code> contiene <strong>2 Sí y 0 No</strong>. Luego</p>
+<div class="math-block">\[G_{Dogs}=\frac46\left[1-(3/4)^2-(1/4)^2\right]+\frac26\cdot0=\frac46\cdot\frac38=\boxed{0.25}.\]</div>
+<p>Por tanto, el índice no es 0.17 en esta rama, como se afirma en la solución publicada. Frente a <span class="math">\(G_{Age&lt;49}=0\)</span>, la edad es la mejor partición.</p>
+<h2>7.5 Árbol final corregido</h2>
+<p><img src="figuras/arbol_corregido.png" alt="Árbol de decisión con corte en edad 49, a partir de los registros del enunciado" /></p>
+<p>Interpretación de las reglas del árbol:</p>
+<ul>
+<li>Si <code>Like Gravity = No</code>, se predice <code>Astronauta = No</code> (4 de 4 casos).</li>
+<li>Si <code>Like Gravity = Sí</code> y <code>Age &lt; 49</code>, se predice <code>Astronauta = Sí</code> (5 de 5 casos).</li>
+<li>Si <code>Like Gravity = Sí</code> y <code>Age &gt;= 49</code>, se predice <code>Astronauta = No</code> (1 de 1 caso).</li>
+</ul>
+<p>Los diez registros del ejercicio quedan separados sin impureza en las hojas. Esto <strong>no demuestra que el árbol generalice sin errores</strong> fuera de la muestra: solo describe las diez observaciones utilizadas.</p>
+<blockquote>
+<p><strong>Hallazgo adicional:</strong> el umbral <span class="math">\((x_i+x_{i+1})/2\)</span> es el punto medio de dos edades ordenadas consecutivas, no la mediana estadística de todas las edades.</p>
+</blockquote>
+</article><div class="nextprev"><a href="06.html">← Lasso</a><span></span><a href="08.html">AdaBoost →</a></div><footer>Documento académico individual · Edwin Yunis · Fuentes: notas del profesor y consignas de la tarea.</footer></main></div></div></body></html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Demostraciones de Machine Learning, trabajo individual de Edwin Yunis"><title>Ridge: derivadas · Edwin Yunis</title><link rel="stylesheet" href="styles.css"><script>window.MathJax={tex:{inlineMath:[["\(","\)"],["$","$"]],displayMath:[["\[","\]"],["$$","$$"]]},options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']}};</script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script></head><body>
+<div class="layout"><aside class="sidebar"><div class="brand"><span class="mark">∑</span><div><b>Machine Learning</b><small>Bono académico · Demostraciones</small></div></div><p class="sidecap">AUTOR</p><p class="student">Edwin Yunis</p><p class="sidecap">CAPÍTULOS</p><nav aria-label="Capítulos"><a href="intro.html" class="nav "><span class="navnum">00</span><span><b>Inicio</b><small>Introducción y mapa del bono</small></span></a><a href="01.html" class="nav "><span class="navnum">01</span><span><b>Riesgo en K-NN</b><small>Riesgo verdadero y empírico</small></span></a><a href="02.html" class="nav "><span class="navnum">02</span><span><b>Cota de 1-NN</b><small>Dos casos de η(x)</small></span></a><a href="03.html" class="nav "><span class="navnum">03</span><span><b>Ridge: propiedades</b><small>Esperanza, covarianza, sesgo y ECM</small></span></a><a href="04.html" class="nav selected"><span class="navnum">04</span><span><b>Ridge: derivadas</b><small>Centrado e intercepto</small></span></a><a href="05.html" class="nav "><span class="navnum">05</span><span><b>Estandarización</b><small>Igualdades (3.11)</small></span></a><a href="06.html" class="nav "><span class="navnum">06</span><span><b>Lasso</b><small>Subgradiente, umbral suave y LARS</small></span></a><a href="07.html" class="nav "><span class="navnum">07</span><span><b>Árbol corregido</b><small>Gini y Age < 49</small></span></a><a href="08.html" class="nav "><span class="navnum">08</span><span><b>AdaBoost</b><small>Pesos, actualización y cota</small></span></a></nav><div class="sidefoot">Dr. Lihki Rubio<br>Maestría en Ingeniería Industrial<br>Universidad del Norte · 2026</div></aside>
+<div class="mainwrap"><header class="topbar"><div><b>Demostraciones matemáticas</b><span> · Solución individual</span></div><div class="topright">Edwin Yunis</div></header><main class="main"><div class="crumb">BONO ACADÉMICO <span>/</span> Ridge: derivadas</div><article class="paper"><h1>4. Ridge · Centrado, intercepto y formas cuadráticas</h1>
+<p><img src="figuras/image4.png" alt="Consigna de ecuación 3.8" /></p>
+<h2>4.1 Identidad del diseño centrado</h2>
+<p>Sea <span class="math">\(Z\)</span> la matriz con columnas <span class="math">\(z_{ij}=(x_{ij}-\bar x_j)/s_j\)</span>, donde <span class="math">\(s_j&gt;0\)</span> y <span class="math">\(\bar x_j=(1/n)\sum_i x_{ij}\)</span>. Sea <span class="math">\(\mathbf 1\)</span> el vector de <span class="math">\(n\)</span> unos.</p>
+<p>La componente <span class="math">\(j\)</span> del producto <span class="math">\(Z^T\mathbf 1\)</span> es</p>
+<div class="math-block">\[\begin{aligned}(Z^T\mathbf1)_j&amp;=\sum_{i=1}^nz_{ij}\\&amp;=\frac{1}{s_j}\left(\sum_{i=1}^nx_{ij}-n\bar x_j\right)=0.\end{aligned}\]</div>
+<p>De manera inmediata, por transposición,</p>
+<div class="math-block">\[\boxed{Z^T\mathbf 1=\mathbf0\quad\text{y}\quad\mathbf1^TZ=\mathbf0^T.}\]</div>
+<p>El resultado se debe al <em>centrado</em>; la división por <span class="math">\(s_j\)</span> no altera que la suma sea cero.</p>
+<h2>4.2 Derivada respecto al intercepto (ecuación 3.8)</h2>
+<p>El criterio ridge sin penalización del intercepto es</p>
+<div class="math-block">\[S_\lambda(\beta_0,\beta)=(y-\beta_0\mathbf1-Z\beta)^T(y-\beta_0\mathbf1-Z\beta)+\lambda\beta^T\beta.\]</div>
+<p>Denotamos por <span class="math">\(r=y-\beta_0\mathbf1-Z\beta\)</span> los residuos. Entonces,</p>
+<div class="math-block">\[\frac{\partial S_\lambda}{\partial\beta_0}=-2\mathbf1^Tr=-2n\bar y+2n\beta_0+2\underbrace{\mathbf1^TZ}_{0}\beta.\]</div>
+<p>Igualando a cero se obtiene <span class="math">\(\boxed{\hat\beta_0=\bar y}\)</span>. Si también se centra la respuesta, <span class="math">\(\bar y=0\)</span>.</p>
+<h2>4.3 Derivada de la forma cuadrática</h2>
+<p>Sean <span class="math">\(u=(u_1,\ldots,u_p)^T\)</span> y una matriz <span class="math">\(M=(m_{jk})\)</span>. Como <span class="math">\(u^TMu=\sum_{j,k}m_{jk}u_ju_k\)</span>, la derivada de cada componente es</p>
+<div class="math-block">\[\frac{\partial(u^TMu)}{\partial u_r}=\sum_km_{rk}u_k+\sum_jm_{jr}u_j.\]</div>
+<p>Agrupando,</p>
+<div class="math-block">\[\boxed{\nabla_u(u^TMu)=(M+M^T)u.}\]</div>
+<p>En particular, si <span class="math">\(M=M^T\)</span>, queda <span class="math">\(\nabla_u(u^TMu)=2Mu\)</span>; además, <span class="math">\(\nabla_u(a^Tu)=a\)</span>.</p>
+<h2>4.4 Ecuación normal ridge y verificación del mínimo</h2>
+<p>Derivando con respecto a <span class="math">\(\beta\)</span>:</p>
+<div class="math-block">\[\nabla_\beta S_\lambda=-2Z^Ty+2\beta_0Z^T\mathbf1+2Z^TZ\beta+2\lambda\beta.\]</div>
+<p>Usamos <span class="math">\(Z^T\mathbf1=0\)</span> e igualamos a cero:</p>
+<div class="math-block">\[\boxed{(Z^TZ+\lambda I_p)\hat\beta=Z^Ty\quad\Longrightarrow\quad\hat\beta=(Z^TZ+\lambda I_p)^{-1}Z^Ty.}\]</div>
+<p>La hessiana es <span class="math">\(2(Z^TZ+\lambda I_p)\)</span>, definida positiva cuando <span class="math">\(\lambda&gt;0\)</span>. Por consiguiente, el punto crítico es un mínimo global único.</p>
+<p><strong>Conclusión:</strong> centrar las características desacopla el intercepto de los coeficientes. Ridge penaliza los coeficientes, no el nivel medio de la respuesta.</p>
+</article><div class="nextprev"><a href="03.html">← Ridge: propiedades</a><span></span><a href="05.html">Estandarización →</a></div><footer>Documento académico individual · Edwin Yunis · Fuentes: notas del profesor y consignas de la tarea.</footer></main></div></div></body></html>
