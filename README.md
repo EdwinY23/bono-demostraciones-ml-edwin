@@ -1,37 +1,39 @@
-# Bono académico · Demostraciones de Machine Learning
+# Bono académico — Demostraciones de Machine Learning
 
-**Autor: Edwin Yunis**  
-**Curso:** Machine Learning · Maestría en Ingeniería Industrial  
-**Profesor:** Dr. Lihki Rubio
+**Autor:** Edwin Yunis  
+**Asignatura:** Machine Learning · Maestría en Ingeniería Industrial  
+**Docente:** Dr. Lihki Rubio · Universidad del Norte
 
-Compilación individual de varios ejercicios matemáticos para bono académico, basada en el documento `Demostraciones Tarea (1).docx`. Incluye correcciones fundamentadas al material de consulta y figuras tomadas del documento de consignas.
+Colección individual de ocho demostraciones matemáticas correspondientes a distintos temas de la asignatura. Cada capítulo incluye el enunciado, la justificación algebraica, el desarrollo paso a paso y una conclusión.
 
-## Ver versión web
+## Presentación web
 
-Una vez habilitado GitHub Pages, estará en `https://edwiny23.github.io/bono-demostraciones-ml-edwin/` si el repositorio se llama exactamente `bono-demostraciones-ml-edwin`. El enlace no estará activo hasta que exista el repositorio y se complete el despliegue.
+**[Abrir bono académico — Edwin Yunis](https://edwiny23.github.io/bono-demostraciones-ml-edwin/)**
 
-## Publicar en GitHub
+El sitio incluye ocho capítulos, navegación por temas, expresiones matemáticas y las imágenes de los enunciados.
 
-1. Crear un repositorio **público**, por ejemplo `bono-demostraciones-ml-edwin`, bajo `EdwinY23`.
-2. Subir **los archivos y carpetas extraídos** de este ZIP a la rama `main`; no subir el ZIP comprimido como único archivo.
-3. GitHub → **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-4. Abrir **Actions** y comprobar que `Publicar Jupyter Book - Edwin Yunis` finalice con éxito.
+## Capítulos
 
-En caso de no ejecutar el workflow, el directorio `docs/` contiene una **copia HTML independiente** que puede publicarse desde `main` / `docs` usando la opción *Deploy from a branch* de Pages. El workflow, si está habilitado, genera la apariencia nativa del Jupyter Book.
+1. K-NN: riesgo verdadero y empírico
+2. K-NN: desigualdad del vecino más cercano
+3. Regresión Ridge: esperanza, covarianza, sesgo y error cuadrático medio
+4. Regresión Ridge: centrado y derivadas matriciales
+5. Regresión Ridge: estandarización
+6. Regresión Lasso: condiciones de optimalidad y LARS
+7. Árbol de decisión: revisión de los cálculos del ejercicio 6
+8. AdaBoost: derivación de los pesos y la cota del error
 
-## Compilación reproducible
+## Material académico
 
-```bash
-python -m pip install -r requirements.txt
-jupyter-book build .
-```
+- [Notas de Machine Learning — Dr. Lihki Rubio](https://lihkir.github.io/MachineLearning/intro.html)
+- [K-NN](https://lihkir.github.io/MachineLearning/knn_model.html)
+- [Modelos lineales: Ridge y Lasso](https://lihkir.github.io/MachineLearning/linear_model.html)
+- [Árboles de decisión y ensambles](https://lihkir.github.io/MachineLearning/decisiontree_model.html)
+- [Ejercicios y soluciones de las notas](https://lihkir.github.io/MachineLearning/exercises_sols.html)
+- Consignas proporcionadas en clase para el bono académico
 
-El HTML se produce en `_build/html/`.
+## Organización y publicación
 
-## Material de referencia
+Los archivos `01.md` a `08.md` contienen el texto fuente; `figuras/` contiene las imágenes de los enunciados. La carpeta `docs/` es la versión HTML publicada.
 
-- Notas de clase: https://lihkir.github.io/MachineLearning/
-- Documento de consignas del profesor.
-- Libro de referencia compartido por compañero: https://jserrano3010.github.io/demostraciones-tarea1/intro.html
-
-El material de referencia no se presenta como coautoría; la solución individual identifica y corrige expresamente un error sustancial en el ejercicio del árbol de decisión, además de desarrollar las demostraciones solicitadas.
+La publicación se realiza con GitHub Pages mediante `.github/workflows/publicar-bono.yml`. El sitio está preparado para consultarse sin necesidad de ejecutar Python.
