@@ -76,6 +76,23 @@ jobs:
             fi
           fi
 
+      - name: Verificar navegación y autoría antes de publicar
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("docs")
+          assert (root / "styles.css").is_file(), "Falta hoja de estilos"
+          index = (root / "index.html").read_text(encoding="utf-8")
+          for n in range(1, 9):
+              file = f"{n:02d}.html"
+              assert f'href="{file}"' in index, f"Sin enlace a {file}"
+              page = (root / file).read_text(encoding="utf-8")
+              assert "Edwin Yunis" in page, f"Falta autor en {file}"
+              assert "Jairo Andrés Serrano" not in page, f"Autoría errónea en {file}"
+          print("OK: 8 capítulos enlazados, recursos y autoría individual")
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
 
